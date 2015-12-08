@@ -18,14 +18,19 @@ func IsSupported() bool {
 // ReapChildren is a long-running routine that blocks waiting for child
 // processes to exit and reaps them, reporting reaped process IDs to the
 // optional pids channel and any errors to the optional errors channel.
-func ReapChildren(pids PidCh, errors ErrorCh) {
+func ReapChildren(pids PidCh, errors ErrorCh, done chan struct{}) {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, unix.SIGCHLD)
 
 	for {
 	WAIT:
 		// Block for an incoming signal that a child has exited.
-		<-c
+		select {
+		case <-c:
+			// Got a child signal, drop out and reap.
+		case <-done:
+			return
+		}
 
 		// Try to reap children until there aren't any more. We never
 		// block in here so that we are always responsive to signals, at

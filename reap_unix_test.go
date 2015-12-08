@@ -21,7 +21,13 @@ func TestReap_IsSupported(t *testing.T) {
 func TestReap_ReapChildren(t *testing.T) {
 	pids := make(PidCh, 1)
 	errors := make(ErrorCh, 1)
-	go ReapChildren(pids, errors)
+	done := make(chan struct{}, 1)
+
+	didExit := make(chan struct{}, 1)
+	go func() {
+		ReapChildren(pids, errors, done)
+		didExit <- struct{}{}
+	}()
 
 	killAndCheck := func() {
 		cmd := exec.Command("sleep", "5")
@@ -67,4 +73,13 @@ func TestReap_ReapChildren(t *testing.T) {
 	killAndCheck()
 	killAndCheck()
 	killAndCheck()
+
+	// Shut it down.
+	close(done)
+	select {
+	case <-didExit:
+		// Good - the goroutine shut down.
+	case <-time.After(1 * time.Second):
+		t.Fatalf("should have shut down")
+	}
 }

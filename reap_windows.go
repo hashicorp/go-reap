@@ -9,5 +9,5 @@ func IsSupported() bool {
 }
 
 // ReapChildren is not supported on Windows so this always returns right away.
-func ReapChildren(pids PidCh, errors ErrorCh) {
+func ReapChildren(pids PidCh, errors ErrorCh, done chan struct{}) {
 }

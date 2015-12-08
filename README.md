@@ -19,7 +19,7 @@ Example
 Below is a simple example of usage
 
 ```go
-// Reap children with no feedback.
+// Reap children with no control or feedback.
 if reap.IsSupported() {
 	go ReapChildren(nil, nil)
 }
@@ -28,8 +28,10 @@ if reap.IsSupported() {
 if reap.IsSupported() {
 	pids := make(reap.PidCh, 1)
 	errors := make(reap.ErrorCh, 1)
-	go ReapChildren(pids, errors)
+        done := make(chan struct{})
+	go ReapChildren(pids, errors, done)
 	// ...
+        close(done)
 }
 ```
 
