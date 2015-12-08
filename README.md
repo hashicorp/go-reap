@@ -28,10 +28,10 @@ if reap.IsSupported() {
 if reap.IsSupported() {
 	pids := make(reap.PidCh, 1)
 	errors := make(reap.ErrorCh, 1)
-        done := make(chan struct{})
+	done := make(chan struct{})
 	go ReapChildren(pids, errors, done)
 	// ...
-        close(done)
+	close(done)
 }
 ```
 
