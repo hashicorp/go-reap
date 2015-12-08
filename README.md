@@ -29,6 +29,7 @@ if reap.IsSupported() {
 	pids := make(reap.PidCh, 1)
 	errors := make(reap.ErrorCh, 1)
 	go ReapChildren(pids, errors)
+	// ...
 }
 ```
 
