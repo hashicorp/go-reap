@@ -15,7 +15,7 @@ func TestReap_IsSupported(t *testing.T) {
 
 func TestReap_ReapChildren(t *testing.T) {
 	pids := make(PidCh, 1)
-	errors := make(ErrCh, 1)
+	errors := make(ErrorCh, 1)
 	ReapChildren(pids, errors)
 	select {
 	case <-pids:
