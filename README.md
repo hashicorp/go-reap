@@ -20,9 +20,7 @@ Below is a simple example of usage
 
 ```go
 // Reap children with no control or feedback.
-if reap.IsSupported() {
-	go ReapChildren(nil, nil, nil)
-}
+go ReapChildren(nil, nil, nil)
 
 // Get feedback on reaped children and errors.
 if reap.IsSupported() {
@@ -32,6 +30,8 @@ if reap.IsSupported() {
 	go ReapChildren(pids, errors, done)
 	// ...
 	close(done)
+} else {
+	fmt.Println("Sorry, go-reap isn't supported on your platform.")
 }
 ```
 
