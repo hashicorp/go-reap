@@ -44,10 +44,13 @@ func ReapChildren(pids PidCh, errors ErrorCh, done chan struct{}) {
 			switch err {
 			case nil:
 				// Got a child, clean this up and poll again.
-				if pids != nil {
-					pids <- pid
+				if pid > 0 {
+					if pids != nil {
+						pids <- pid
+					}
+					goto POLL
 				}
-				goto POLL
+				goto WAIT
 
 			case unix.ECHILD:
 				// No more children, we are done.
