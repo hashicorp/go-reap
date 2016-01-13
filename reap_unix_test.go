@@ -108,3 +108,42 @@ func TestReap_ReapChildren(t *testing.T) {
 		t.Fatalf("should have shut down")
 	}
 }
+
+func TestReap_ReapOnce(t *testing.T) {
+	killAndCheck := func() {
+		cmd := exec.Command("sleep", "5")
+		if err := cmd.Start(); err != nil {
+			t.Fatalf("err: %v", err)
+		}
+
+		childPid := cmd.Process.Pid
+		if err := cmd.Process.Kill(); err != nil {
+			t.Fatalf("err: %v", err)
+		}
+
+		start := time.Now()
+		for {
+			pid, err := ReapOnce()
+			if err != nil {
+				t.Fatalf("err: %v", err)
+			}
+
+			if pid != 0 && pid != childPid {
+				t.Fatalf("unexpected pid: %d != %d", pid, childPid)
+			}
+
+			if pid == childPid {
+				break
+			}
+
+			if time.Now().Sub(start) > time.Second {
+				t.Fatalf("should have reaped %d", childPid)
+			}
+		}
+	}
+
+	// Run a few cycles to make sure things work.
+	killAndCheck()
+	killAndCheck()
+	killAndCheck()
+}

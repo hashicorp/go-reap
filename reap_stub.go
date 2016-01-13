@@ -3,11 +3,16 @@
 package reap
 
 // IsSupported returns true if child process reaping is supported on this
-// platform. This Windows version always returns false.
+// platform. This stub version always returns false.
 func IsSupported() bool {
 	return false
 }
 
-// ReapChildren is not supported on Windows so this always returns right away.
+// ReapChildren is not supported so this always returns right away.
 func ReapChildren(pids PidCh, errors ErrorCh, done chan struct{}) {
+}
+
+// ReapOnce is not supported so this always returns as if nothing was reaped.
+func ReapOnce() (int, error) {
+	return 0, nil
 }
