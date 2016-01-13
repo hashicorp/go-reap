@@ -16,7 +16,7 @@ func TestReap_IsSupported(t *testing.T) {
 func TestReap_ReapChildren(t *testing.T) {
 	pids := make(PidCh, 1)
 	errors := make(ErrorCh, 1)
-	ReapChildren(pids, errors, nil)
+	ReapChildren(pids, errors, nil, nil)
 	select {
 	case <-pids:
 		t.Fatalf("should not report any pids")
