@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"sync"
 	"testing"
 	"time"
 
@@ -22,10 +23,11 @@ func TestReap_ReapChildren(t *testing.T) {
 	pids := make(PidCh, 1)
 	errors := make(ErrorCh, 1)
 	done := make(chan struct{}, 1)
+	var reapLock sync.RWMutex
 
 	didExit := make(chan struct{}, 1)
 	go func() {
-		ReapChildren(pids, errors, done)
+		ReapChildren(pids, errors, done, &reapLock)
 		didExit <- struct{}{}
 	}()
 
@@ -76,11 +78,27 @@ func TestReap_ReapChildren(t *testing.T) {
 		// Good - nothing was sent to the channels.
 	}
 
+	// Take the reap lock.
+	reapLock.RLock()
+
 	// Now kill the child subprocess.
 	childPid := cmd.Process.Pid
 	if err := cmd.Process.Kill(); err != nil {
 		t.Fatalf("err: %v", err)
 	}
+
+	// Make sure the reaper didn't report anything.
+	select {
+	case pid := <-pids:
+		t.Fatalf("unexpected pid: %d", pid)
+	case err := <-errors:
+		t.Fatalf("err: %v", err)
+	case <-time.After(1 * time.Second):
+		// Good - nothing was sent to the channels.
+	}
+
+	// Give up the reap lock.
+	reapLock.RUnlock()
 
 	// Make sure the reaper sees it.
 	select {
