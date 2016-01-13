@@ -8,6 +8,11 @@ or Solaris. Unsupported platforms have a stub implementation that's safe to call
 as well as an API to check if reaping is supported so that you can produce an
 error in your application code.
 
+Use care with `ReapChildren` if you also use Go's `exec` functions which internally
+wait for subprocesses to complete. This will steal the results away from them. If
+that's the case, then you may need to use `ReapOnce` during a safe time when you know
+that no waits are occurring.
+
 Documentation
 =============
 
@@ -32,6 +37,19 @@ if reap.IsSupported() {
 	close(done)
 } else {
 	fmt.Println("Sorry, go-reap isn't supported on your platform.")
+}
+
+// Poll for children to reap and reap them all.
+for {
+	pid, err := ReapOnce()
+        if err != nil {
+		panic(err)
+	}
+        if pid > 0 {
+		fmt.Printf("Reaped child process %d\n", pid)
+		continue
+	}
+        break
 }
 ```
 

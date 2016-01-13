@@ -25,3 +25,13 @@ func TestReap_ReapChildren(t *testing.T) {
 	default:
 	}
 }
+
+func TestReap_ReapOnce(t *testing.T) {
+	pid, err := ReapOnce()
+	if err != nil {
+		t.Fatalf("err: %v", err)
+	}
+	if pid != 0 {
+		f.Fatalf("bad: %d", pid)
+	}
+}
