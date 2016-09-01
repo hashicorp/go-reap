@@ -30,6 +30,7 @@ func TestReap_ReapChildren(t *testing.T) {
 		ReapChildren(pids, errors, done, &reapLock)
 		didExit <- struct{}{}
 	}()
+	time.Sleep(1 * time.Second)
 
 	killAndCheck := func() {
 		cmd := exec.Command("sleep", "5")
