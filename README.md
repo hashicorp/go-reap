@@ -28,7 +28,7 @@ Below is a simple example of usage
 
 ```go
 // Reap children with no control or feedback.
-go reap.ReapChildren(nil, nil, nil)
+go reap.ReapChildren(nil, nil, nil, nil)
 
 // Get feedback on reaped children and errors.
 if reap.IsSupported() {

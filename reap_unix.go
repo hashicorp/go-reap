@@ -27,7 +27,7 @@ func IsSupported() bool {
 // so that we don't serialize all of the application's execution of sub
 // processes with each other, but we do serialize them with reaping. The
 // application should get a read lock when it wants to do a wait.
-func ReapChildren(pids PidCh, errors ErrorCh, done chan struct{}, reapLock *sync.RWMutex) {
+func ReapChildren(pids PidCh, errors ErrorCh, done <-chan struct{}, reapLock *sync.RWMutex) {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, unix.SIGCHLD)
 
