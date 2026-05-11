@@ -1,3 +1,5 @@
+// Copyright IBM Corp. 2015, 2026
+
 package reap
 
 // ErrorCh is an error channel that lets you know when an error was
